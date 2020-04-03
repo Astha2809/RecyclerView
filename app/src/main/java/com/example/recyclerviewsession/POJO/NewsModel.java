@@ -7,6 +7,9 @@ public class NewsModel {
     public int type;
     int images;
     String heading;
+    String subheading;
+    String time;
+
 
     public NewsModel(int type, int images, String heading, String subheading, String time) {
         this.type = type;
@@ -56,7 +59,5 @@ public class NewsModel {
         this.time = time;
     }
 
-    String subheading;
-    String time;
 
 }

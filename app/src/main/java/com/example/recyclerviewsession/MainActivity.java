@@ -13,29 +13,61 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
-    private LinearLayoutManager layoutManager;
-    String[] ar = new String[10];
-    boolean isScrolling=false;
-    int currentItems,totalItems,scrolledOutItem;
-    ProgressBar progressBar;
-    ArrayList<String> arrayList=new ArrayList<>();
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    private LinearLayoutManager layoutManager;
+    private String[] ar = new String[10];
+    boolean isScrolling = false;
+    int currentItems;
+    int totalItems;
+    int scrolledOutItem;
+
+    static final int DELAY_5000_MS = 5000;
+
+    ArrayList<String> arrayList = new ArrayList<>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addData();
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycle);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        mAdapter = new MyAdapter(ar, this);
+        recyclerView.setAdapter(mAdapter);
+        setUpScrollListener();
+
+
+    }
+
+    private void fetchdata() {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 5; i++) {
+                    arrayList.add(Math.floor(Math.random() * 100) + "");
+                    mAdapter.notifyDataSetChanged();
+                }
+
+
+            }
+        }, DELAY_5000_MS);
+    }
+
+    private void addData() {
         ar[0] = "astha";
         ar[1] = "priya";
         ar[2] = "bharat";
@@ -46,22 +78,18 @@ public class MainActivity extends AppCompatActivity {
         ar[7] = "def";
         ar[8] = "ghi";
         ar[9] = "jkl";
-        RecyclerView recyclerView = findViewById(R.id.recycle);
-        recyclerView = (RecyclerView) findViewById(R.id.recycle);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new MyAdapter(ar, this.getBaseContext());
-        recyclerView.setAdapter(mAdapter);
+    }
+
+    private void setUpScrollListener() {
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    isScrolling = true;
-                }
-            }
+//            @Override
+//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+//                    isScrolling = true;
+//                }
+//            }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -76,25 +104,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        }
-        private void fetchdata(){
-            progressBar.setVisibility(View.VISIBLE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i=0;i<5;i++){
-                        arrayList.add(Math.floor(Math.random()*100)+"");
-                        mAdapter.notifyDataSetChanged();
-                    }
+    }
 
-
-                }
-            },5000);
-        }
-
-        }
-
-
+}
 
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -102,11 +114,10 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] mDataset;
 
 
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater lf = LayoutInflater.from(mainActivity);
+        LayoutInflater lf = LayoutInflater.from(parent.getContext());
         View v = lf.inflate(R.layout.text, parent, false);
         return new MyViewHolder(v);
 
@@ -119,9 +130,9 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-//        holder.textView.setText(mDataset[position]);
 
-        ((TextView) holder.v.findViewById(R.id.textview)).setText(mDataset[position]);
+        // ((TextView) holder.v.findViewById(R.id.textview)).setText(mDataset[position]);
+        holder.textView_name.setText(mDataset[position]);
 
     }
 
@@ -132,10 +143,13 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public View v;
+        public TextView textView_name;
+
 
         public MyViewHolder(View v) {
             super(v);
             this.v = v;
+            textView_name = v.findViewById(R.id.textview);
         }
 
     }
@@ -144,6 +158,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         this.mDataset = myDataset;
         this.mainActivity = mainActivity;
     }
+
 
 }
 
